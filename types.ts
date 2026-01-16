@@ -8,7 +8,7 @@ export type DensityLevel = 'Normal' | 'Simple' | 'Compact';
 export type WealthType = 'Investment' | 'Liability';
 export type WealthCategory = 
   | 'Savings' | 'Pension' | 'Gold' | 'Cash' | 'Investment'
-  | 'Credit Card' | 'Personal Loan' | 'Home Loan' | 'Overdraft' | 'Other';
+  | 'Credit Card' | 'Personal Loan' | 'Home Loan' | 'Overdraft' | 'Gold Loan' | 'Other';
 
 export interface BudgetItem {
   id: string;
