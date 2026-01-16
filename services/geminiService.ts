@@ -220,7 +220,8 @@ export async function getBudgetInsights(expenses: Expense[], settings: UserSetti
     Context: Monthly Income ${Math.round(settings.monthlyIncome)} ${settings.currency}.
     Current spend: Needs ${summary.Needs || 0}, Wants ${summary.Wants || 0}, Savings ${summary.Savings || 0}.
     Targets: ${settings.split.Needs}% Needs, ${settings.split.Wants}% Wants, ${settings.split.Savings}% Savings.
-    Output 3 actionable tips for wealth building in JSON array of {tip, impact}.
+    Output 3 EXTREMELY SHORT (max 10 words) actionable coaching tips in JSON array of {tip, impact}.
+    Examples: "Hey, your saving percentage is good this month!", "Avoid buying expensive tech this week.", "Dining spend is peaking, try cooking."
   `;
 
   try {
