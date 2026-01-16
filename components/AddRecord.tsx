@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   Category, Expense, UserSettings, Frequency, 
@@ -22,6 +21,7 @@ interface AddRecordProps {
   onAdd: (expense: Omit<Expense, 'id'>, frequency: Frequency) => void;
   onAddIncome: (income: Omit<Income, 'id'>) => void;
   onAddBill?: (bill: Omit<Bill, 'id'>) => void;
+  onUpdateBill?: (id: string, updates: Partial<Bill>) => void;
   onAddRecurring?: (item: Omit<RecurringItem, 'id'>) => void;
   onAddRule?: (rule: Omit<BudgetRule, 'id'>) => void;
   onTransfer?: (fromId: string, toId: string, amount: number, date: string, note: string) => void;
@@ -34,7 +34,7 @@ interface AddRecordProps {
 }
 
 const AddRecord: React.FC<AddRecordProps> = ({ 
-  settings, wealthItems, rules = [], onAddRule, onAdd, onAddIncome, onAddBill, onAddRecurring, onTransfer, onUpdateExpense, onUpdateIncome, onDelete, onCancel, initialData, expenses = []
+  settings, wealthItems, rules = [], onAddRule, onAdd, onAddIncome, onAddBill, onUpdateBill, onAddRecurring, onTransfer, onUpdateExpense, onUpdateIncome, onDelete, onCancel, initialData, expenses = []
 }) => {
   const isEditing = !!(initialData && initialData.id);
   const isAffordabilityInitial = initialData?.mode === 'Affordability';
@@ -50,7 +50,7 @@ const AddRecord: React.FC<AddRecordProps> = ({
 
   const [mode, setMode] = useState<'Expense' | 'Income' | 'Transfer' | 'Bill' | 'Recurring'>(getInitialMode());
   const [amount, setAmount] = useState(initialData?.amount?.toString() || '');
-  const [date, setDate] = useState(initialData?.date || new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(initialData?.date || initialData?.dueDate || new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState(initialData?.note || '');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(initialData?.paymentMethod || 'UPI');
   const [category, setCategory] = useState<Category>(initialData?.category || 'Needs');
@@ -107,8 +107,10 @@ const AddRecord: React.FC<AddRecordProps> = ({
       const payload = { amount: roundedAmount, date, type: incomeType, note, paymentMethod, targetAccountId: targetWealthId };
       if (isEditing && onUpdateIncome) onUpdateIncome(initialData.id, payload);
       else onAddIncome(payload);
-    } else if (mode === 'Bill' && onAddBill) {
-      onAddBill({ amount: roundedAmount, dueDate: date, merchant: merchant || note, category, isPaid: false, note, frequency });
+    } else if (mode === 'Bill') {
+      const payload = { amount: roundedAmount, dueDate: date, merchant: merchant || note, category, isPaid: initialData?.isPaid || false, note, frequency };
+      if (isEditing && onUpdateBill) onUpdateBill(initialData.id, payload);
+      else if (onAddBill) onAddBill(payload);
     } else if (mode === 'Recurring' && onAddRecurring) {
         onAddRecurring({ amount: roundedAmount, nextDueDate: date, merchant: merchant || note, category, subCategory, note, frequency: frequency === 'None' ? 'Monthly' : frequency });
     } else if (mode === 'Transfer' && onTransfer) {
@@ -184,7 +186,9 @@ const AddRecord: React.FC<AddRecordProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
              <div className="space-y-1.5">
-                <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest ml-1">{mode === 'Recurring' ? 'Renewal Date' : 'Event Date'}</span>
+                <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    {mode === 'Recurring' ? 'Renewal Date' : mode === 'Bill' ? 'Due Date' : 'Event Date'}
+                </span>
                 <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 p-3.5 rounded-xl text-[10px] font-black outline-none border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white" />
              </div>
              <div className="space-y-1.5">

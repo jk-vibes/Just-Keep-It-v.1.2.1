@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { View, Expense, BudgetRule, UserSettings, Category, UserProfile, Frequency, RecurringItem, Income, IncomeType, AppTheme, Notification, WealthItem, WealthType, WealthCategory, DensityLevel, BudgetItem, Bill } from './types';
 import Dashboard from './components/Dashboard';
 import Ledger from './components/Ledger';
-import AddExpense from './components/AddExpense';
+import AddRecord from './components/AddRecord';
 import AddAccount from './components/AddAccount';
 import AddTransfer from './components/AddTransfer';
 import Settings from './components/Settings';
@@ -223,6 +223,22 @@ const App: React.FC = () => {
   const handleDeleteRecurring = (id: string) => {
     setRecurringItems(prev => prev.filter(i => i.id !== id));
     showToast("Recurring cycle terminated", "info");
+  };
+
+  const handleAddBill = (bill: Omit<Bill, 'id'>) => {
+    const id = Math.random().toString(36).substring(2, 11);
+    setBills(prev => [...prev, { ...bill, id }]);
+    showToast("Bill registry updated");
+  };
+
+  const handleUpdateBill = (id: string, updates: Partial<Bill>) => {
+    setBills(prev => prev.map(b => b.id === id ? { ...b, ...updates } : b));
+    showToast("Bill protocol updated");
+  };
+
+  const handleDeleteBill = (id: string) => {
+    setBills(prev => prev.filter(b => b.id !== id));
+    showToast("Bill removed", "info");
   };
 
   const handleViewRule = (ruleId: string) => { triggerHaptic(); setHighlightedRuleId(ruleId); setCurrentView('Rules'); };
@@ -640,7 +656,7 @@ const App: React.FC = () => {
         <div className="max-w-2xl mx-auto w-full px-2 min-h-full flex flex-col">
           <div className="flex-1">
             {currentView === 'Dashboard' && <Dashboard expenses={expenses} incomes={incomes} wealthItems={wealthItems} settings={settings} user={user} onCategorizeClick={() => setIsCategorizing(true)} onConfirmExpense={(id, cat) => onUpdateExpense(id, { category: cat, isConfirmed: true })} onSmartAdd={() => {}} viewDate={viewDate} onMonthChange={(d) => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + d, 1))} onGoToDate={(y, m) => setViewDate(new Date(y, m, 1))} onInsightsReceived={() => {}} onAffordabilityCheck={() => handleViewAction('Affordability')} />}
-            {currentView === 'Budget' && <BudgetPlanner budgetItems={budgetItems} recurringItems={recurringItems} expenses={expenses} bills={bills} settings={settings} onAddBudget={(b) => setBudgetItems(p => [...p, { ...b, id: Math.random().toString(36).substring(2, 11) }])} onUpdateBudget={(id, u) => setBudgetItems(p => p.map(b => b.id === id ? { ...b, ...u } : b))} onDeleteBudget={(id) => { setBudgetItems(p => p.filter(b => b.id !== id)); showToast("Budget node decommissioned", "info"); }} onPayBill={handlePayBill} onDeleteBill={(id) => { setBills(p => p.filter(b => b.id !== id)); showToast("Bill removed", "info"); }} onSmartAddBill={() => { triggerHaptic(); setRecordToEdit({ mode: currentView === 'Budget' ? 'Bill' : 'Expense' }); setIsAddingRecord(true); }} viewDate={viewDate} externalShowAdd={false} onAddClose={() => {}} />}
+            {currentView === 'Budget' && <BudgetPlanner budgetItems={budgetItems} recurringItems={recurringItems} expenses={expenses} bills={bills} settings={settings} onAddBudget={(b) => setBudgetItems(p => [...p, { ...b, id: Math.random().toString(36).substring(2, 11) }])} onUpdateBudget={(id, u) => setBudgetItems(p => p.map(b => b.id === id ? { ...b, ...u } : b))} onDeleteBudget={(id) => { setBudgetItems(p => p.filter(b => b.id !== id)); showToast("Budget node decommissioned", "info"); }} onPayBill={handlePayBill} onDeleteBill={handleDeleteBill} onEditBill={(b) => { triggerHaptic(); setRecordToEdit(b); setIsAddingRecord(true); }} onSmartAddBill={() => { triggerHaptic(); setRecordToEdit({ mode: 'Bill' }); setIsAddingRecord(true); }} viewDate={viewDate} externalShowAdd={false} onAddClose={() => {}} />}
             {currentView === 'Accounts' && <Accounts wealthItems={wealthItems} expenses={expenses} incomes={incomes} settings={settings} onUpdateWealth={(id, u) => { setWealthItems(p => p.map(w => w.id === id ? { ...w, ...u } : w)); showToast("Account registry updated"); }} onDeleteWealth={handleDeleteAccount} onAddWealth={(w) => { setWealthItems(p => [...p, { ...w, id: Math.random().toString(36).substring(2, 11) }]); showToast("New instrument provisioned"); setAccountToEdit(null); setIsAddingAccount(false); } } onEditAccount={(acc) => { setAccountToEdit(acc); setIsAddingAccount(true); }} onAddAccountClick={() => { setAccountToEdit(null); setIsAddingAccount(true); }} onAddIncomeClick={() => { triggerHaptic(); setRecordToEdit({ mode: 'Income' }); setIsAddingRecord(true); }} onAddTransferClick={() => { triggerHaptic(); setIsAddingTransfer(true); }} onDeleteExpense={handleDeleteExpense} onDeleteIncome={handleDeleteIncome} externalShowAdd={false} onAddClose={() => {}} />}
             {currentView === 'Rules' && <RulesEngine rules={rules} highlightRuleId={highlightedRuleId} onClearHighlight={() => setHighlightedRuleId(null)} recurringItems={recurringItems} settings={settings} onAddRule={handleAddRule} onDeleteRule={handleDeleteRule} onDeleteRecurring={handleDeleteRecurring} onAddRecurringClick={() => { triggerHaptic(); setRecordToEdit({ mode: 'Recurring' }); setIsAddingRecord(true); }} />}
             {currentView === 'Ledger' && <Ledger expenses={expenses} incomes={incomes} wealthItems={wealthItems} rules={rules} settings={settings} onDeleteExpense={handleDeleteExpense} onDeleteIncome={handleDeleteIncome} onConfirm={(id, cat) => onUpdateExpense(id, { category: cat, isConfirmed: true })} onUpdateExpense={onUpdateExpense} onEditRecord={(r) => { triggerHaptic(); setRecordToEdit(r); setIsAddingRecord(true); }} onAddBulk={(items) => { setStagedImportItems(items); setIsReviewingImport(true); }} onViewRule={handleViewRule} viewDate={viewDate} onMonthChange={(d) => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + d, 1))} onGoToDate={(y, m) => setViewDate(new Date(y, m, 1))} addNotification={addNotification} />}
@@ -655,7 +671,26 @@ const App: React.FC = () => {
       {isReviewingImport && <ImportReviewModal stagedItems={stagedImportItems} wealthItems={wealthItems} settings={settings} onConfirm={(final) => { handleAddBulk(final); setIsReviewingImport(false); }} onCancel={() => setIsReviewingImport(false)} />}
       {isAddingAccount && <AddAccount settings={settings} initialData={accountToEdit} onSave={(acc) => { setWealthItems(p => [...p, { ...acc, id: Math.random().toString(36).substring(2, 11) }]); setIsAddingAccount(false); }} onUpdate={(id, u) => { setWealthItems(p => p.map(w => w.id === id ? { ...w, ...u } : w)); setIsAddingAccount(false); }} onDelete={handleDeleteAccount} onCancel={() => setIsAddingAccount(false)} />}
       {isAddingTransfer && <AddTransfer settings={settings} wealthItems={wealthItems} onTransfer={handleTransfer} onCancel={() => setIsAddingTransfer(false)} />}
-      {isAddingRecord && <AddExpense settings={settings} wealthItems={wealthItems} onAdd={handleAddExpense} onAddIncome={handleAddIncome} onUpdateExpense={onUpdateExpense} onUpdateIncome={(id, u) => { setIncomes(p => p.map(i => i.id === id ? { ...i, ...u } : i)); }} onDelete={() => { setIsAddingRecord(false); }} onCancel={() => setIsAddingRecord(false)} initialData={recordToEdit} />}
+      {isAddingRecord && <AddRecord 
+        settings={settings} 
+        wealthItems={wealthItems} 
+        expenses={expenses}
+        onAdd={handleAddExpense} 
+        onAddIncome={handleAddIncome} 
+        onAddBill={handleAddBill}
+        onUpdateBill={handleUpdateBill}
+        onUpdateExpense={onUpdateExpense} 
+        onUpdateIncome={(id, u) => { setIncomes(p => p.map(i => i.id === id ? { ...i, ...u } : i)); }} 
+        onDelete={() => {
+            if (!recordToEdit?.id) return;
+            if (recordToEdit.dueDate) handleDeleteBill(recordToEdit.id);
+            else if (recordToEdit.type) handleDeleteIncome(recordToEdit.id);
+            else handleDeleteExpense(recordToEdit.id);
+            setIsAddingRecord(false);
+        }} 
+        onCancel={() => setIsAddingRecord(false)} 
+        initialData={recordToEdit} 
+      />}
       {isShowingAskMe && <AskMe settings={settings} wealthItems={wealthItems} expenses={expenses} onCancel={() => setIsShowingAskMe(false)} />}
       {isCategorizing && <CategorizationModal settings={settings} expenses={expenses.filter(e => !e.isConfirmed)} onConfirm={(id, cat) => onUpdateExpense(id, { category: cat, isConfirmed: true })} onClose={() => setIsCategorizing(false)} />}
       {isShowingNotifications && <NotificationPane notifications={notifications} onClose={() => setIsShowingNotifications(false)} onClear={() => setNotifications([])} />}

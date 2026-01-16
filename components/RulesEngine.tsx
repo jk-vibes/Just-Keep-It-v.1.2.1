@@ -104,14 +104,9 @@ const RulesEngine: React.FC<RulesEngineProps> = ({ rules, highlightRuleId, onCle
   return (
     <div className="pb-32 pt-0 animate-slide-up">
       <div className="bg-gradient-to-r from-brand-primary to-brand-secondary px-5 py-4 rounded-2xl mb-1 mx-1 shadow-md h-[55px] flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="bg-white/20 p-1.5 rounded-lg text-white backdrop-blur-md">
-            <Cpu size={18} />
-          </div>
-          <div>
-            <h1 className="text-xs font-black text-white uppercase leading-none tracking-tight">Rules Engine</h1>
-            <p className="text-[7px] font-bold text-white/60 uppercase tracking-[0.2em] mt-0.5">Automation Center</p>
-          </div>
+        <div>
+          <h1 className="text-[14px] font-black text-white uppercase leading-none tracking-tight">Rules Engine</h1>
+          <p className="text-[7px] font-bold text-white/60 uppercase tracking-[0.2em] mt-0.5">Automation Center</p>
         </div>
         {activeTab === 'mapping' ? (
           <button onClick={() => { triggerHaptic(); setIsAdding(true); }} className="p-2 bg-white/10 rounded-xl text-white active:scale-95"><Plus size={16} strokeWidth={3} /></button>

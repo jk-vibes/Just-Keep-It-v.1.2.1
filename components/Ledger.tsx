@@ -167,7 +167,7 @@ const SwipeableItem: React.FC<{
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-2 overflow-hidden">
-                <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-lg mt-0.5" style={{ backgroundColor: `${themeColor}15`, color: themeColor }}>
+                <div className="w-9 h-9 flex items-center justify-center shrink-0 rounded-xl mt-0.5 p-2" style={{ backgroundColor: `${themeColor}15`, color: themeColor }}>
                   {getCategoryIcon(parentCategory, item.subCategory, recordType === 'income' ? item.type : undefined)}
                 </div>
                 <div className="min-w-0 flex flex-col">
@@ -339,16 +339,15 @@ const Ledger: React.FC<LedgerProps> = ({
           <h1 className="text-xs font-black text-white uppercase leading-none tracking-tight">Ledger</h1>
           <p className="text-[7px] font-bold text-white/60 uppercase tracking-[0.2em] mt-0.5">Registry Protocol</p>
         </div>
-        <div className="flex gap-2">
-           <button onClick={() => { triggerHaptic(); setIsSearchOpen(!isSearchOpen); }} className={`p-1.5 rounded-lg transition-all active:scale-95 border border-white/10 ${isSearchOpen ? 'bg-white text-indigo-600' : 'bg-white/10 text-white'}`}>
-             <Search size={14} />
+        
+        {/* Header-based icons requested: AI icon and chart icon */}
+        <div className="flex items-center gap-1">
+           <button onClick={handleBatchRefine} disabled={isRefining} className={`p-2 rounded-xl transition-all active:scale-95 ${isShowingAISuggestionsOnly ? 'bg-white text-indigo-600' : 'bg-white/10 text-white'}`}>
+                {isRefining ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} strokeWidth={2.5} />}
            </button>
-           <button onClick={handleBatchRefine} disabled={isRefining} className={`p-1.5 rounded-lg transition-all active:scale-95 border border-white/10 ${isShowingAISuggestionsOnly ? 'bg-white text-indigo-600' : 'bg-white/10 text-white'}`}>
-                {isRefining ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
-           </button>
-           <button onClick={() => setIsSelectionMode(!isSelectionMode)} className={`p-1.5 rounded-lg transition-all ${isSelectionMode ? 'bg-white text-brand-primary' : 'bg-white/10 text-white'}`}>
-             <ListChecks size={14} />
-           </button>
+           <button onClick={() => { triggerHaptic(); setViewMode(viewMode === 'list' ? 'compare' : 'list'); }} className={`p-2 rounded-xl transition-all active:scale-95 ${viewMode === 'compare' ? 'bg-white text-indigo-600' : 'bg-white/10 text-white'}`}>
+             {viewMode === 'list' ? <BarChart3 size={16} /> : <LayoutList size={16} />}
+          </button>
         </div>
       </div>
 
@@ -371,25 +370,31 @@ const Ledger: React.FC<LedgerProps> = ({
         </div>
       )}
 
-      <div className="flex items-center glass p-0.5 rounded-xl mb-1 mx-0.5 border-white/10 shadow-sm h-[40px] gap-1">
-        <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 flex-none h-full px-1">
-          <button onClick={() => (triggerHaptic(), onMonthChange(-1))} className="p-1 text-slate-400 active:scale-90"><ChevronLeft size={14} strokeWidth={3} /></button>
-          <h2 className="text-[8px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest min-w-[50px] text-center">{monthLabel}</h2>
-          <button onClick={() => (triggerHaptic(), onMonthChange(1))} className="p-1 text-slate-400 active:scale-90"><ChevronRight size={14} strokeWidth={3} /></button>
-        </div>
-        
-        <div className="flex-1 flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 h-full overflow-hidden">
-          <button onClick={() => { triggerHaptic(); setFilterType('expense'); }} className={`flex-1 h-full flex items-center justify-center transition-all ${filterType === 'expense' ? 'bg-white dark:bg-slate-700 text-rose-500 shadow-sm rounded-md' : 'text-slate-400'}`}><ArrowDownCircle size={14} /></button>
-          <button onClick={() => { triggerHaptic(); setFilterType('income'); }} className={`flex-1 h-full flex items-center justify-center transition-all ${filterType === 'income' ? 'bg-white dark:bg-slate-700 text-emerald-500 shadow-sm rounded-md' : 'text-slate-400'}`}><ArrowUpCircle size={14} /></button>
-          <button onClick={() => { triggerHaptic(); setFilterType('transfer'); }} className={`flex-1 h-full flex items-center justify-center transition-all ${filterType === 'transfer' ? 'bg-white dark:bg-slate-700 text-indigo-500 shadow-sm rounded-md' : 'text-slate-400'}`}><ArrowRightLeft size={14} /></button>
-          <button onClick={() => { triggerHaptic(); setFilterType('bill_payment'); }} className={`flex-1 h-full flex items-center justify-center transition-all ${filterType === 'bill_payment' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm rounded-md' : 'text-slate-400'}`}><CreditCard size={14} /></button>
-          <button onClick={() => { triggerHaptic(); setFilterType('all'); setIsShowingAISuggestionsOnly(false); setSearchQuery(''); }} className={`flex-1 h-full flex items-center justify-center transition-all ${filterType === 'all' && !isShowingAISuggestionsOnly && !searchQuery ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm rounded-md' : 'text-slate-300'}`}><FilterX size={14} /></button>
+      {/* NAVIGATION BAR - RIGHT PANE Tight implementation */}
+      <div className="flex items-center justify-between glass p-1 rounded-xl mb-1 mx-0.5 border-white/10 shadow-sm h-[42px]">
+        {/* Month Navigation - Kept on left */}
+        <div className="flex items-center gap-1 h-full px-1">
+          <button onClick={() => (triggerHaptic(), onMonthChange(-1))} className="p-1 text-slate-400 active:scale-90"><ChevronLeft size={16} strokeWidth={3} /></button>
+          <h2 className="text-[9px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest min-w-[55px] text-center">{monthLabel}</h2>
+          <button onClick={() => (triggerHaptic(), onMonthChange(1))} className="p-1 text-slate-400 active:scale-90"><ChevronRight size={16} strokeWidth={3} /></button>
         </div>
 
-        <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 h-full flex-none px-1">
-          <button onClick={() => { triggerHaptic(); setViewMode(viewMode === 'list' ? 'compare' : 'list'); }} className="p-1.5 text-slate-400 active:scale-90">
-             {viewMode === 'list' ? <BarChart3 size={14} /> : <LayoutList size={14} />}
-          </button>
+        {/* Right Pane: Search, Selection, and Filters - NO PADDING, NO GROUPING, TIGHT GAP */}
+        <div className="flex items-center gap-0.5 flex-none h-full">
+           <button onClick={() => { triggerHaptic(); setIsSearchOpen(!isSearchOpen); }} className={`p-1.5 transition-all active:scale-95 ${isSearchOpen ? 'text-indigo-600' : 'text-slate-400'}`}>
+             <Search size={16} strokeWidth={2.5} />
+           </button>
+           <button onClick={() => setIsSelectionMode(!isSelectionMode)} className={`p-1.5 transition-all active:scale-95 ${isSelectionMode ? 'text-brand-primary' : 'text-slate-400'}`}>
+             <ListChecks size={16} strokeWidth={2.5} />
+           </button>
+           
+           <div className="w-[1px] h-4 bg-slate-200 dark:bg-slate-800 mx-1" />
+           
+           <button onClick={() => { triggerHaptic(); setFilterType('expense'); }} className={`p-1.5 transition-all ${filterType === 'expense' ? 'text-rose-500' : 'text-slate-400'}`}><ArrowDownCircle size={16} /></button>
+           <button onClick={() => { triggerHaptic(); setFilterType('income'); }} className={`p-1.5 transition-all ${filterType === 'income' ? 'text-emerald-500' : 'text-slate-400'}`}><ArrowUpCircle size={16} /></button>
+           <button onClick={() => { triggerHaptic(); setFilterType('transfer'); }} className={`p-1.5 transition-all ${filterType === 'transfer' ? 'text-indigo-500' : 'text-slate-400'}`}><ArrowRightLeft size={16} /></button>
+           <button onClick={() => { triggerHaptic(); setFilterType('bill_payment'); }} className={`p-1.5 transition-all ${filterType === 'bill_payment' ? 'text-blue-600' : 'text-slate-400'}`}><CreditCard size={16} /></button>
+           <button onClick={() => { triggerHaptic(); setFilterType('all'); setIsShowingAISuggestionsOnly(false); setSearchQuery(''); }} className={`p-1.5 transition-all ${filterType === 'all' && !isShowingAISuggestionsOnly && !searchQuery ? 'text-slate-900 dark:text-white' : 'text-slate-300'}`}><FilterX size={16} /></button>
         </div>
       </div>
 

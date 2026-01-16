@@ -7,7 +7,7 @@ import {
   LayoutGrid, List, Layers, PieChart,
   ChevronRight, AlertTriangle, Activity,
   Shield, Star, Trophy, ArrowDownCircle,
-  History, Fingerprint
+  History, Fingerprint, Edit2
 } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 
@@ -22,6 +22,7 @@ interface BudgetPlannerProps {
   onDeleteBudget: (id: string) => void;
   onPayBill: (bill: Bill) => void;
   onDeleteBill: (id: string) => void;
+  onEditBill: (bill: Bill) => void;
   onSmartAddBill: () => void;
   viewDate: Date;
   externalShowAdd?: boolean;
@@ -149,7 +150,7 @@ const SubCategoryCard: React.FC<SubCategoryCardProps> = ({
 };
 
 const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
-  budgetItems, expenses, bills, settings, onAddBudget, onPayBill, viewDate
+  budgetItems, expenses, bills, settings, onAddBudget, onPayBill, onEditBill, viewDate
 }) => {
   const [activeView, setActiveView] = useState<'Budgets' | 'Bills'>('Budgets');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -210,19 +211,11 @@ const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
 
   return (
     <div className="pb-32 pt-0 animate-slide-up">
-      <div className="bg-gradient-to-r from-brand-primary to-brand-secondary px-3 py-3 rounded-xl mb-1 mx-0.5 shadow-md h-[50px] flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="bg-white/20 p-1.5 rounded-lg text-white backdrop-blur-md">
-            <Target size={18} />
-          </div>
-          <div>
-            <h1 className="text-xs font-black text-white uppercase leading-none tracking-tight">Budget Architect</h1>
-            <p className="text-[7px] font-bold text-white/60 uppercase tracking-[0.2em] mt-0.5">Capital Strategy</p>
-          </div>
+      <div className="bg-gradient-to-r from-brand-primary to-brand-secondary px-5 py-3 rounded-xl mb-1 mx-0.5 shadow-md h-[50px] flex items-center">
+        <div className="flex flex-col">
+          <h1 className="text-[14px] font-black text-white uppercase leading-none tracking-tight">Budget Planner</h1>
+          <p className="text-[7px] font-bold text-white/60 uppercase tracking-[0.2em] mt-0.5">Architect Protocol</p>
         </div>
-        <button onClick={() => triggerHaptic()} className="p-2 bg-white/20 rounded-xl text-white active:scale-95 transition-transform">
-          <Plus size={16} strokeWidth={3} />
-        </button>
       </div>
 
       <div className="flex glass p-1 rounded-2xl mb-2 mx-0.5 border-white/10 shadow-sm h-[44px] items-center">
@@ -371,12 +364,20 @@ const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
                    </div>
                    <div className="flex items-center gap-3">
                       <p className="text-xs font-black text-slate-900 dark:text-white">{currencySymbol}{bill.amount.toLocaleString()}</p>
-                      <button 
-                        onClick={() => { triggerHaptic(); onPayBill(bill); }} 
-                        className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-md active:scale-95 transition-transform"
-                      >
-                        Settle
-                      </button>
+                      <div className="flex gap-1.5">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); onEditBill(bill); }}
+                          className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-500 transition-all"
+                        >
+                          <Edit2 size={12} />
+                        </button>
+                        <button 
+                          onClick={() => { triggerHaptic(); onPayBill(bill); }} 
+                          className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-md active:scale-95 transition-transform"
+                        >
+                          Settle
+                        </button>
+                      </div>
                    </div>
                 </div>
              ))}
