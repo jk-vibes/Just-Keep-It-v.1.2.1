@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { WealthItem, UserSettings, Expense, Income, WealthCategory } from '../types';
 import { getCurrencySymbol } from '../constants';
 import { 
@@ -82,17 +82,25 @@ const Accounts: React.FC<AccountsProps> = ({
     };
   }, [wealthItems]);
 
-  const groupedAccounts = useMemo(() => {
-    const groups: Record<WealthCategory, WealthItem[]> = {} as any;
-    wealthItems.forEach(item => {
-      if (!groups[item.category]) groups[item.category] = [];
-      groups[item.category].push(item);
+  const assetGroups = useMemo(() => {
+    const groups: Record<string, WealthItem[]> = {};
+    wealthItems.filter(i => i.type === 'Investment').forEach(item => {
+      const g = item.group || item.category || 'Other';
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(item);
     });
     return groups;
   }, [wealthItems]);
 
-  const assetCategories: WealthCategory[] = ['Savings', 'Pension', 'Gold', 'Investment', 'Cash', 'Other'];
-  const liabilityCategories: WealthCategory[] = ['Credit Card', 'Personal Loan', 'Home Loan', 'Overdraft', 'Other'];
+  const liabilityGroups = useMemo(() => {
+    const groups: Record<string, WealthItem[]> = {};
+    wealthItems.filter(i => i.type === 'Liability').forEach(item => {
+      const g = item.group || item.category || 'Other';
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(item);
+    });
+    return groups;
+  }, [wealthItems]);
 
   return (
     <div className="h-full flex flex-col pb-20 animate-slide-up overflow-hidden">
@@ -100,7 +108,7 @@ const Accounts: React.FC<AccountsProps> = ({
       <div className="bg-gradient-to-r from-brand-primary to-brand-secondary px-4 py-2 shadow-md h-[48px] flex items-center justify-between shrink-0">
         <div className="flex flex-col">
           <h1 className="text-[11px] font-black text-white uppercase leading-none">Accounts</h1>
-          <p className="text-[6px] font-bold text-white/60 uppercase tracking-[0.2em]">High Density Grid</p>
+          <p className="text-[6px] font-bold text-white/60 uppercase tracking-[0.2em]">Registry Grid</p>
         </div>
         <div className="flex items-center gap-1.5">
           <button onClick={onAddTransferClick} className="p-1.5 bg-white/10 rounded-lg text-white active:scale-95 transition-all"><ArrowRightLeft size={14} /></button>
@@ -108,13 +116,13 @@ const Accounts: React.FC<AccountsProps> = ({
         </div>
       </div>
 
-      {/* Ultra Compact Net Worth Bar */}
+      {/* Net Worth Bar */}
       <div className="bg-white dark:bg-slate-900 px-4 py-2 border-b border-slate-100 dark:border-slate-800 shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div>
-            <p className="text-[6px] font-black text-slate-400 uppercase tracking-widest">Net Worth</p>
+            <p className="text-[6px] font-black text-slate-400 uppercase tracking-widest">Net Equity</p>
             <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none">
-              {currencySymbol}{stats.netWorth.toLocaleString()}
+              {stats.netWorth < 0 ? '-' : ''}{currencySymbol}{Math.abs(stats.netWorth).toLocaleString()}
             </h2>
           </div>
           <div className="h-6 w-[1px] bg-slate-100 dark:bg-slate-800" />
@@ -132,10 +140,10 @@ const Accounts: React.FC<AccountsProps> = ({
         <ShieldCheck size={14} className="text-brand-primary/50" />
       </div>
 
-      {/* Main High-Density Side-by-Side Area */}
+      {/* Main Grid Area */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* CAPITAL COLUMN */}
+        {/* CAPITAL ASSETS COLUMN */}
         <div className="flex-1 flex flex-col border-r border-slate-100 dark:border-slate-800">
           <div className="px-2 py-1.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <span className="text-[7px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">Capital Assets</span>
@@ -143,52 +151,62 @@ const Accounts: React.FC<AccountsProps> = ({
           </div>
           
           <div className="flex-1 overflow-y-auto no-scrollbar">
-            {assetCategories.map(cat => (
-              groupedAccounts[cat] && groupedAccounts[cat].length > 0 && (
-                <div key={cat} className="border-b border-slate-50 dark:border-slate-800/20">
+            {Object.keys(assetGroups).sort().map(group => (
+                <div key={group} className="border-b border-slate-50 dark:border-slate-800/20">
                   <div className="px-2 py-0.5 bg-slate-100/30 dark:bg-slate-800/30 flex justify-between items-center">
-                    <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest">{cat}</span>
-                    <span className="text-[6px] font-bold text-slate-400">{currencySymbol}{Math.round(groupedAccounts[cat].reduce((s,i)=>s+i.value,0)).toLocaleString()}</span>
+                    <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest">{group}</span>
+                    <span className="text-[6px] font-bold text-slate-400">
+                      {currencySymbol}{Math.round(assetGroups[group].reduce((s,i)=>s+i.value,0)).toLocaleString()}
+                    </span>
                   </div>
-                  {groupedAccounts[cat].map(item => (
+                  {assetGroups[group].map(item => (
                     <UltraCompactRow key={item.id} item={item} currencySymbol={currencySymbol} onClick={() => onEditAccount(item)} />
                   ))}
                 </div>
-              )
             ))}
+            {Object.keys(assetGroups).length === 0 && (
+              <div className="flex flex-col items-center justify-center py-10 opacity-20">
+                <PiggyBank size={24} />
+              </div>
+            )}
           </div>
 
           <div className="p-2 bg-emerald-50/50 dark:bg-emerald-950/20 border-t border-emerald-100 dark:border-emerald-900/30">
-            <p className="text-[6px] font-black text-slate-400 uppercase">Total Assets</p>
+            <p className="text-[6px] font-black text-slate-400 uppercase">Column Total</p>
             <p className="text-[11px] font-black text-emerald-600">{currencySymbol}{stats.totalAssets.toLocaleString()}</p>
           </div>
         </div>
 
-        {/* DEBT COLUMN */}
+        {/* DEBT NODES COLUMN */}
         <div className="flex-1 flex flex-col">
           <div className="px-2 py-1.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <span className="text-[7px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-[0.2em]">Liability Nodes</span>
+            <span className="text-[7px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-[0.2em]">Liability Load</span>
             <Activity size={8} className="text-slate-300" />
           </div>
 
           <div className="flex-1 overflow-y-auto no-scrollbar">
-            {liabilityCategories.map(cat => (
-              groupedAccounts[cat] && groupedAccounts[cat].length > 0 && (
-                <div key={cat} className="border-b border-slate-50 dark:border-slate-800/20">
+            {Object.keys(liabilityGroups).sort().map(group => (
+                <div key={group} className="border-b border-slate-50 dark:border-slate-800/20">
                   <div className="px-2 py-0.5 bg-slate-100/30 dark:bg-slate-800/30 flex justify-between items-center">
-                    <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest">{cat}</span>
-                    <span className="text-[6px] font-bold text-slate-400">{currencySymbol}{Math.round(groupedAccounts[cat].reduce((s,i)=>s+i.value,0)).toLocaleString()}</span>
+                    <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest">{group}</span>
+                    <span className="text-[6px] font-bold text-slate-400">
+                      {currencySymbol}{Math.round(liabilityGroups[group].reduce((s,i)=>s+i.value,0)).toLocaleString()}
+                    </span>
                   </div>
-                  {groupedAccounts[cat].map(item => (
+                  {liabilityGroups[group].map(item => (
                     <UltraCompactRow key={item.id} item={item} currencySymbol={currencySymbol} onClick={() => onEditAccount(item)} />
                   ))}
                 </div>
-              )
             ))}
+            {Object.keys(liabilityGroups).length === 0 && (
+              <div className="flex flex-col items-center justify-center py-10 opacity-20">
+                <CreditCard size={24} />
+              </div>
+            )}
           </div>
 
           <div className="p-2 bg-rose-50/50 dark:bg-rose-950/20 border-t border-rose-100 dark:border-rose-900/30">
-            <p className="text-[6px] font-black text-slate-400 uppercase">Total Liabilities</p>
+            <p className="text-[6px] font-black text-slate-400 uppercase">Column Total</p>
             <p className="text-[11px] font-black text-rose-600">{currencySymbol}{stats.totalLiabilities.toLocaleString()}</p>
           </div>
         </div>
@@ -199,7 +217,7 @@ const Accounts: React.FC<AccountsProps> = ({
       <div className="bg-slate-900 text-white px-4 py-2 shrink-0 flex items-center justify-center gap-4">
           <div className="flex items-center gap-1.5 opacity-60">
              <div className="w-1 h-1 rounded-full bg-indigo-400" />
-             <span className="text-[7px] font-black uppercase tracking-widest">System Integrated</span>
+             <span className="text-[7px] font-black uppercase tracking-widest">Sync Active</span>
           </div>
           <span className="text-[8px] font-black uppercase tracking-[0.2em]">
             Exposure: {currencySymbol}{(stats.totalAssets + stats.totalLiabilities).toLocaleString()}

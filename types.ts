@@ -64,6 +64,7 @@ export interface WealthItem {
   id: string;
   type: WealthType;
   category: WealthCategory;
+  group?: string; // New field for custom grouping
   name: string; // The raw label used for mapping
   alias?: string; // Friendly display name
   value: number;

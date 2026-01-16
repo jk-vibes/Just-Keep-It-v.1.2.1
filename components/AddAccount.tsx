@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { WealthItem, WealthType, WealthCategory, UserSettings } from '../types';
 import { getCurrencySymbol } from '../constants';
-import { Check, X, ChevronDown, Wallet, Landmark, CreditCard, Trash2, ShieldCheck, Tag } from 'lucide-react';
+import { Check, X, ChevronDown, Wallet, Landmark, CreditCard, Trash2, ShieldCheck, Tag, Folder } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 
 interface AddAccountProps {
@@ -20,9 +20,10 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
   const isEditing = !!(initialData && initialData.id);
   const [type, setType] = useState<WealthType>(initialData?.type || 'Investment');
   const [category, setCategory] = useState<WealthCategory>(initialData?.category || 'Savings');
+  const [groupName, setGroupName] = useState(initialData?.group || '');
   const [name, setName] = useState(initialData?.name || '');
   const [alias, setAlias] = useState(initialData?.alias || '');
-  const [value, setValue] = useState(initialData ? Math.round(initialData.value).toString() : '');
+  const [value, setValue] = useState(initialData ? initialData.value.toString() : '');
   const [limit, setLimit] = useState(initialData?.limit ? Math.round(initialData.limit).toString() : '');
 
   const currencySymbol = getCurrencySymbol(settings.currency);
@@ -31,7 +32,11 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
     if (!name || value === '') return;
     triggerHaptic(20);
     const payload: Omit<WealthItem, 'id'> = {
-      type, category, name: name.trim(), alias: (alias || name).trim(),
+      type, 
+      category, 
+      group: groupName.trim() || category, // Default to category if group is empty
+      name: name.trim(), 
+      alias: (alias || name).trim(),
       value: Math.round(parseFloat(value) || 0),
       date: new Date().toISOString()
     };
@@ -67,12 +72,13 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
         <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
           
           <div className="space-y-0">
-             <span className={inputLabelClass}>Current Balance</span>
+             <span className={inputLabelClass}>Account Balance</span>
              <div className="relative border-b border-slate-100 dark:border-slate-800/60 pb-1">
                 <span className="absolute left-0 top-1/2 -translate-y-1/2 text-lg font-black text-slate-300 dark:text-slate-700">{currencySymbol}</span>
                 <input
                   autoFocus
                   type="number"
+                  step="any"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   placeholder="0"
@@ -118,7 +124,18 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
           </div>
 
           <div className="space-y-0.5">
-            <span className={inputLabelClass}><Wallet size={8}/> Display Name</span>
+            <span className={inputLabelClass}><Folder size={8}/> Display Group</span>
+            <input 
+              type="text" 
+              value={groupName} 
+              onChange={(e) => setGroupName(e.target.value)} 
+              placeholder="e.g. Gold, Savings, Home Loan" 
+              className={selectClasses} 
+            />
+          </div>
+
+          <div className="space-y-0.5">
+            <span className={inputLabelClass}><Wallet size={8}/> Friendly Alias</span>
             <input 
               type="text" 
               value={alias} 
