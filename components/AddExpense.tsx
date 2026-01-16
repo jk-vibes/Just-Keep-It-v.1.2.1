@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Category, Expense, UserSettings, Frequency, 
@@ -37,7 +38,8 @@ const AddExpense: React.FC<AddExpenseProps> = ({
   const [sourceWealthId, setSourceWealthId] = useState<string>(initialData?.sourceAccountId || initialData?.targetAccountId || '');
 
   const currencySymbol = getCurrencySymbol(settings.currency);
-  const liquidAccounts = wealthItems.filter(i => ['Savings', 'Cash', 'Card'].includes(i.category));
+  // Fixed: Replaced 'Card' with 'Credit Card' to match WealthCategory type
+  const liquidAccounts = wealthItems.filter(i => ['Savings', 'Cash', 'Credit Card'].includes(i.category));
 
   const handleInternalSubmit = () => {
     if (!amount) return;

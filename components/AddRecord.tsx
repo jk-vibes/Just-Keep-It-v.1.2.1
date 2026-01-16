@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Category, Expense, UserSettings, Frequency, 
@@ -65,14 +66,17 @@ const AddRecord: React.FC<AddRecordProps> = ({
   const [decisionAdvice, setDecisionAdvice] = useState<any | null>(null);
 
   const currencySymbol = getCurrencySymbol(settings.currency);
-  const liquidAccounts = wealthItems.filter(i => ['Savings', 'Cash', 'Card'].includes(i.category));
+  // Fixed: Replaced 'Card' with 'Credit Card' to match WealthCategory type
+  const liquidAccounts = wealthItems.filter(i => ['Savings', 'Cash', 'Credit Card'].includes(i.category));
   const isModeLocked = !!(initialData?.mode || isEditing);
 
   const handleRunAssessment = async () => {
     if (!amount || !merchant || isAssessing) return;
     triggerHaptic(); setIsAssessing(true);
     try {
-      const advice = await getDecisionAdvice(expenses || [], wealthItems, settings, 'Purchase', merchant, Math.round(parseFloat(amount)));
+      // Combined extra arguments into a descriptive query string to match getDecisionAdvice's signature
+      const query = `Affordability check for ${merchant} costing ${Math.round(parseFloat(amount))} ${settings.currency}`;
+      const advice = await getDecisionAdvice(expenses || [], wealthItems, settings, query);
       setDecisionAdvice(advice);
     } catch (e) {} finally { setIsAssessing(false); }
   };
@@ -284,7 +288,7 @@ const AddRecord: React.FC<AddRecordProps> = ({
                        className={selectClasses}
                      >
                        <option value="">Vault Unbound</option>
-                       {liquidAccounts.map(acc => <option key={acc.id} value={acc.id}>{acc.alias || acc.name}</option>)}
+                       {liquidAccounts.map(acc => <option key={acc.id} value={acc.id}>{acc.alias || acc.name} ({currencySymbol}{Math.round(acc.value).toLocaleString()})</option>)}
                      </select>
                      <ChevronDown size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                    </div>

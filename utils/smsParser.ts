@@ -1,3 +1,4 @@
+
 import { Category, WealthType, WealthCategory } from '../types';
 import { SUB_CATEGORIES } from '../constants';
 
@@ -275,7 +276,8 @@ function parseStructuredRows(rows: string[][], headerIdx: number, guessedIndexes
               value: amountVal,
               name: desc.trim() || accHint.trim() || 'Imported Account',
               wealthType: isLiability ? 'Liability' : 'Investment',
-              wealthCategory: isLiability ? 'Card' : 'Savings',
+              // Fixed: Replaced 'Card' with 'Credit Card' to match WealthCategory type
+              wealthCategory: isLiability ? 'Credit Card' : 'Savings',
               date: dateStr,
               rawContent: row.join(' | ')
           });

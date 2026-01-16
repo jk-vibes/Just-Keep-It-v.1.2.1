@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { UserSettings, WealthItem } from '../types';
 import { getCurrencySymbol } from '../constants';
@@ -19,7 +20,8 @@ const AddTransfer: React.FC<AddTransferProps> = ({ settings, wealthItems, onTran
   const [toAccountId, setToAccountId] = useState('');
 
   const currencySymbol = getCurrencySymbol(settings.currency);
-  const liquidAccounts = wealthItems.filter(i => ['Savings', 'Cash', 'Card'].includes(i.category));
+  // Fixed: Replaced 'Card' with 'Credit Card' to match WealthCategory type
+  const liquidAccounts = wealthItems.filter(i => ['Savings', 'Cash', 'Credit Card'].includes(i.category));
 
   const handleSubmit = () => {
     if (!amount || !fromAccountId || !toAccountId || fromAccountId === toAccountId) return;

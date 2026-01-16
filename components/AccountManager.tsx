@@ -27,8 +27,9 @@ const AccountManager: React.FC<AccountManagerProps> = ({
   const stats = useMemo(() => {
     // Fixed category filter strings
     const debitItems = wealthItems.filter(i => ['Savings', 'Cash'].includes(i.category));
-    const creditItems = wealthItems.filter(i => ['Loan', 'Card'].includes(i.category));
-    const otherAssets = wealthItems.filter(i => !['Savings', 'Cash', 'Loan', 'Card'].includes(i.category));
+    // Fixed: Replaced 'Card' and 'Loan' with valid WealthCategory values
+    const creditItems = wealthItems.filter(i => ['Personal Loan', 'Home Loan', 'Credit Card'].includes(i.category));
+    const otherAssets = wealthItems.filter(i => !['Savings', 'Cash', 'Personal Loan', 'Home Loan', 'Credit Card'].includes(i.category));
     const totalDebit = debitItems.reduce((sum, i) => sum + i.value, 0);
     const totalCredit = creditItems.reduce((sum, i) => sum + i.value, 0);
     const totalAssets = totalDebit + otherAssets.reduce((sum, i) => sum + i.value, 0);

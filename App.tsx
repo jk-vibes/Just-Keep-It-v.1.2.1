@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, Expense, BudgetRule, UserSettings, Category, UserProfile, Frequency, RecurringItem, Income, IncomeType, AppTheme, Notification, WealthItem, WealthType, WealthCategory, DensityLevel, BudgetItem, Bill } from './types';
 import Dashboard from './components/Dashboard';
@@ -251,7 +252,8 @@ const App: React.FC = () => {
     triggerHaptic(40);
     const mockAccounts: WealthItem[] = [
       { id: 'acc-1', type: 'Investment', category: 'Savings', name: 'Global Standard', alias: 'Primary Vault', value: 850000, date: new Date().toISOString(), isMock: true },
-      { id: 'acc-2', type: 'Liability', category: 'Card', name: 'Titanium Edge', alias: 'Edge Credit', value: 45000, limit: 1500000, date: new Date().toISOString(), isMock: true },
+      // Fixed: Replaced 'Card' with 'Credit Card' to match WealthCategory type
+      { id: 'acc-2', type: 'Liability', category: 'Credit Card', name: 'Titanium Edge', alias: 'Edge Credit', value: 45000, limit: 1500000, date: new Date().toISOString(), isMock: true },
       { id: 'acc-3', type: 'Investment', category: 'Investment', name: 'BlackRock Funds', alias: 'S&P 500 ETF', value: 2400000, date: new Date().toISOString(), isMock: true },
       { id: 'acc-4', type: 'Investment', category: 'Cash', name: 'Physical Ledger', alias: 'Emergency Cash', value: 50000, date: new Date().toISOString(), isMock: true }
     ];

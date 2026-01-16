@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { WealthItem, WealthType, WealthCategory, UserSettings } from '../types';
 import { getCurrencySymbol } from '../constants';
@@ -14,7 +15,8 @@ interface AccountFormProps {
 }
 
 const DEBIT_CATEGORIES: WealthCategory[] = ['Savings', 'Overdraft', 'Cash', 'Investment'];
-const CREDIT_CATEGORIES: WealthCategory[] = ['Card', 'Loan', 'Other'];
+// Fixed: Replaced 'Card' and 'Loan' with 'Credit Card' and 'Personal Loan' to match WealthCategory type
+const CREDIT_CATEGORIES: WealthCategory[] = ['Credit Card', 'Personal Loan', 'Other'];
 
 const AccountForm: React.FC<AccountFormProps> = ({ settings, onSave, onUpdate, onDelete, onCancel, initialData }) => {
   const isEditing = !!(initialData && initialData.id);
@@ -35,7 +37,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ settings, onSave, onUpdate, o
       value: Math.round(parseFloat(value) || 0),
       date: new Date().toISOString()
     };
-    if (category === 'Card' && limit) payload.limit = Math.round(parseFloat(limit) || 0);
+    if (category === 'Credit Card' && limit) payload.limit = Math.round(parseFloat(limit) || 0);
 
     if (isEditing && onUpdate && initialData?.id) onUpdate(initialData.id, payload);
     else onSave(payload);
@@ -90,7 +92,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ settings, onSave, onUpdate, o
                     onChange={(e) => {
                       const newType = e.target.value as WealthType;
                       setType(newType);
-                      setCategory(newType === 'Investment' ? 'Savings' : 'Card');
+                      setCategory(newType === 'Investment' ? 'Savings' : 'Credit Card');
                     }} 
                     className={selectClasses}
                   >
@@ -106,7 +108,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ settings, onSave, onUpdate, o
                   <select 
                     value={category} 
                     onChange={(e) => setCategory(e.target.value as WealthCategory)} 
-                    className={selectClasses}
+                    className={selectClasses} 
                   >
                     {(type === 'Investment' ? DEBIT_CATEGORIES : CREDIT_CATEGORIES).map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -139,7 +141,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ settings, onSave, onUpdate, o
             />
           </div>
 
-          {category === 'Card' && (
+          {category === 'Credit Card' && (
             <div className="space-y-0.5 animate-kick">
               <span className={inputLabelClass}>Credit Limit</span>
               <input 

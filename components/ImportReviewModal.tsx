@@ -17,8 +17,8 @@ const ImportReviewModal: React.FC<ImportReviewModalProps> = ({ stagedItems, weal
   const currencySymbol = getCurrencySymbol(settings.currency);
   
   const liquidAccounts = useMemo(() => 
-    // Fixed filter to use standard WealthCategory types
-    wealthItems.filter(i => ['Savings', 'Cash', 'Card'].includes(i.category)), 
+    // Fixed: Replaced 'Card' with 'Credit Card' to match WealthCategory type
+    wealthItems.filter(i => ['Savings', 'Cash', 'Credit Card'].includes(i.category)), 
     [wealthItems]
   );
 

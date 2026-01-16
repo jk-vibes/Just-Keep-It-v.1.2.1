@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { WealthItem, WealthType, WealthCategory, UserSettings } from '../types';
 import { getCurrencySymbol } from '../constants';
-// Added Tag to imports
 import { Check, X, ChevronDown, Wallet, Landmark, CreditCard, Trash2, ShieldCheck, Tag } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 
@@ -15,8 +13,8 @@ interface AddAccountProps {
   initialData?: WealthItem | null;
 }
 
-const DEBIT_CATEGORIES: WealthCategory[] = ['Savings', 'Overdraft', 'Cash', 'Investment'];
-const CREDIT_CATEGORIES: WealthCategory[] = ['Card', 'Loan', 'Other'];
+const ASSET_CATEGORIES: WealthCategory[] = ['Savings', 'Pension', 'Gold', 'Investment', 'Cash', 'Other'];
+const LIABILITY_CATEGORIES: WealthCategory[] = ['Credit Card', 'Personal Loan', 'Home Loan', 'Overdraft', 'Other'];
 
 const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onDelete, onCancel, initialData }) => {
   const isEditing = !!(initialData && initialData.id);
@@ -24,20 +22,20 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
   const [category, setCategory] = useState<WealthCategory>(initialData?.category || 'Savings');
   const [name, setName] = useState(initialData?.name || '');
   const [alias, setAlias] = useState(initialData?.alias || '');
-  const [value, setValue] = useState(initialData && initialData.value !== 0 ? Math.round(initialData.value).toString() : '');
-  const [limit, setLimit] = useState(initialData?.limit && initialData.limit !== 0 ? Math.round(initialData.limit).toString() : '');
+  const [value, setValue] = useState(initialData ? Math.round(initialData.value).toString() : '');
+  const [limit, setLimit] = useState(initialData?.limit ? Math.round(initialData.limit).toString() : '');
 
   const currencySymbol = getCurrencySymbol(settings.currency);
 
   const handleSubmit = () => {
-    if (!name || !value) return;
+    if (!name || value === '') return;
     triggerHaptic(20);
     const payload: Omit<WealthItem, 'id'> = {
       type, category, name: name.trim(), alias: (alias || name).trim(),
       value: Math.round(parseFloat(value) || 0),
       date: new Date().toISOString()
     };
-    if (category === 'Card' && limit) payload.limit = Math.round(parseFloat(limit) || 0);
+    if (category === 'Credit Card' && limit) payload.limit = Math.round(parseFloat(limit) || 0);
 
     if (isEditing && onUpdate && initialData?.id) onUpdate(initialData.id, payload);
     else onSave(payload);
@@ -92,7 +90,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
                     onChange={(e) => {
                       const newType = e.target.value as WealthType;
                       setType(newType);
-                      setCategory(newType === 'Investment' ? 'Savings' : 'Card');
+                      setCategory(newType === 'Investment' ? 'Savings' : 'Credit Card');
                     }} 
                     className={selectClasses}
                   >
@@ -110,7 +108,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
                     onChange={(e) => setCategory(e.target.value as WealthCategory)} 
                     className={selectClasses}
                   >
-                    {(type === 'Investment' ? DEBIT_CATEGORIES : CREDIT_CATEGORIES).map(cat => (
+                    {(type === 'Investment' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES).map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
@@ -141,7 +139,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
             />
           </div>
 
-          {category === 'Card' && (
+          {category === 'Credit Card' && (
             <div className="space-y-0.5 animate-kick">
               <span className={inputLabelClass}>Credit Limit</span>
               <input 
@@ -163,7 +161,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
                   <Trash2 size={18} />
                </button>
              )}
-             <button onClick={handleSubmit} disabled={!name || !value} className="flex-1 py-3.5 bg-slate-900 dark:bg-indigo-600 text-white font-black rounded-xl text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+             <button onClick={handleSubmit} disabled={!name || value === ''} className="flex-1 py-3.5 bg-slate-900 dark:bg-indigo-600 text-white font-black rounded-xl text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                <Check size={16} strokeWidth={4} /> {isEditing ? 'Update Registry' : 'Provision Account'}
              </button>
           </div>

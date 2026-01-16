@@ -307,9 +307,7 @@ export async function getDecisionAdvice(
   expenses: Expense[], 
   wealthItems: WealthItem[], 
   settings: UserSettings, 
-  queryType: string, 
-  itemName: string, 
-  estimatedCost: number
+  query: string
 ) {
   const summary = expenses.reduce((acc, exp) => {
     if (exp.isConfirmed) {
@@ -322,12 +320,18 @@ export async function getDecisionAdvice(
   const liquid = wealthItems.filter(i => ['Savings', 'Cash'].includes(i.category)).reduce((sum, i) => sum + i.value, 0);
 
   const prompt = `
-    Affordability check for "${itemName}" costing ${Math.round(estimatedCost)} ${settings.currency}.
-    Monthly Income: ${Math.round(settings.monthlyIncome)}. 
-    Spend summary: Needs ${summary.Needs || 0}, Wants ${summary.Wants || 0}, Savings ${summary.Savings || 0}.
-    Net Portfolio: Assets ${Math.round(assets)}, Liquid Cash ${Math.round(liquid)}.
+    Financial Advisor Request: "${query}"
     
-    Return JSON with status, whole number score (0-100), reasoning, actionPlan, waitTime, and whole number impactPercentage.
+    Context:
+    - Monthly Income: ${Math.round(settings.monthlyIncome)} ${settings.currency}. 
+    - Current Monthly Spend: Needs ${summary.Needs || 0}, Wants ${summary.Wants || 0}, Savings ${summary.Savings || 0}.
+    - Net Portfolio: Assets ${Math.round(assets)}, Liquid Cash ${Math.round(liquid)}.
+    
+    Instruction:
+    Interpret the user's intent. If they are asking about affordability, analyze the purchase against their liquid cash and monthly surplus.
+    If it's general advice, provide strategic direction.
+    
+    Return JSON with status (Safe, Caution, Critical), whole number score (0-100), reasoning (max 30 words), actionPlan (array of strings), waitTime (string hint), and whole number impactPercentage.
   `;
 
   try {
@@ -353,11 +357,11 @@ export async function getDecisionAdvice(
     return JSON.parse(response.text || '{}');
   } catch (error) {
     return { 
-      status: 'Yellow', 
+      status: 'Caution', 
       score: 50, 
-      reasoning: 'AI assessment interrupted. Manual review of your savings buffer is recommended.', 
+      reasoning: 'AI assessment system currently synchronizing. Please review manual liquidity buffers.', 
       actionPlan: ["Review cash on hand", "Check upcoming bills"], 
-      waitTime: "Manual Audit",
+      waitTime: "T+2 Days",
       impactPercentage: 0
     };
   }

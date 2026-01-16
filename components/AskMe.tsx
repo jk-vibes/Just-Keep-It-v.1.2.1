@@ -17,15 +17,14 @@ interface AskMeProps {
 }
 
 const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel }) => {
-  const [itemName, setItemName] = useState('');
-  const [estimatedCost, setEstimatedCost] = useState('');
+  const [query, setQuery] = useState('');
   const [isAssessing, setIsAssessing] = useState(false);
   const [advice, setAdvice] = useState<any | null>(null);
 
   const currencySymbol = getCurrencySymbol(settings.currency);
 
   const handleRunAssessment = async () => {
-    if (!itemName || !estimatedCost || isAssessing) return;
+    if (!query.trim() || isAssessing) return;
     triggerHaptic(30);
     setIsAssessing(true);
     setAdvice(null);
@@ -34,9 +33,7 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
         expenses, 
         wealthItems, 
         settings, 
-        'Affordability Check', 
-        itemName, 
-        parseFloat(estimatedCost)
+        query
       );
       setAdvice(result);
     } catch (e) {
@@ -54,7 +51,7 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
   };
 
   const inputLabelClass = "text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-2 block";
-  const inputClass = "w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl text-[11px] font-black outline-none border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white transition-all focus:border-indigo-500/30";
+  const inputClass = "w-full bg-slate-50 dark:bg-slate-900 p-5 rounded-[24px] text-[11px] font-bold outline-none border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white transition-all focus:border-indigo-500/30 shadow-inner resize-none min-h-[100px]";
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 backdrop-blur-md">
@@ -66,11 +63,11 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
         <div className="p-6 border-b dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-500/20">
-              <Compass size={20} />
+              <Sparkles size={20} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-[0.1em] dark:text-white">AskMe Portal</h3>
-              <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Tactical Decision Engine</p>
+              <h3 className="text-xs font-black uppercase tracking-[0.1em] dark:text-white">Financial Advisor</h3>
+              <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Strategic Intelligence</p>
             </div>
           </div>
           <button onClick={onCancel} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 transition-all active:scale-90 border border-slate-200 dark:border-slate-700">
@@ -80,57 +77,39 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
 
         <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-6">
           {!advice ? (
-            <div className="space-y-6 animate-kick">
-              <div className="bg-indigo-50 dark:bg-indigo-950/20 p-4 rounded-[24px] border border-indigo-100 dark:border-indigo-900/40">
-                <div className="flex items-start gap-3">
-                   <Sparkles className="text-indigo-600 dark:text-indigo-400 shrink-0 mt-1" size={16} />
-                   <p className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 leading-relaxed uppercase italic">
-                     Planning a significant acquisition? Deploy our neural auditor to assess the strategic impact on your capital reserves.
-                   </p>
-                </div>
-              </div>
-
+            <div className="space-y-6 animate-kick pt-2">
               <div>
-                <label className={inputLabelClass}>Strategic Goal / Item</label>
-                <input 
+                <label className={inputLabelClass}>What's on your mind?</label>
+                <textarea 
                   autoFocus
-                  type="text" 
-                  value={itemName} 
-                  onChange={(e) => setItemName(e.target.value)}
-                  placeholder="e.g. RTX 4090, Japan Trip, Macbook Pro"
+                  value={query} 
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="e.g. Should I buy a Macbook Pro for 1.5 lakhs today?"
                   className={inputClass}
                 />
               </div>
 
-              <div>
-                <label className={inputLabelClass}>Estimated Outflow</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-slate-300">{currencySymbol}</span>
-                  <input 
-                    type="number" 
-                    value={estimatedCost} 
-                    onChange={(e) => setEstimatedCost(e.target.value)}
-                    placeholder="0"
-                    className={`${inputClass} pl-8`}
-                  />
-                </div>
-              </div>
-
               <button 
                 onClick={handleRunAssessment}
-                disabled={!itemName || !estimatedCost || isAssessing}
-                className="w-full py-5 bg-slate-900 dark:bg-indigo-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50"
+                disabled={!query.trim() || isAssessing}
+                className="w-full py-5 bg-slate-900 dark:bg-indigo-600 text-white font-black rounded-[24px] text-[10px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50"
               >
                 {isAssessing ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" /> Assessing Capital Impact...
+                    <Loader2 size={16} className="animate-spin" /> Analyzing Strategy...
                   </>
                 ) : (
                   <>
-                    <BrainCircuit size={18} /> Authorize Neural Audit
+                    <BrainCircuit size={18} /> Consulting Neural Grid
                   </>
                 )}
               </button>
+              
+              <div className="flex justify-center gap-4 opacity-30 pt-2">
+                 <Target size={14} />
+                 <ShieldCheck size={14} />
+                 <TrendingUp size={14} />
+              </div>
             </div>
           ) : (
             <div className="space-y-6 animate-kick pb-4">
@@ -141,7 +120,7 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
                 'bg-rose-50 dark:bg-rose-950/20 border-rose-500/20'
               }`}>
                 <div className="relative z-10">
-                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Strategy Score</p>
+                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Decision Score</p>
                    <h2 className={`text-6xl font-black tracking-tighter ${
                      advice.status === 'Safe' ? 'text-emerald-500' : 
                      advice.status === 'Caution' ? 'text-amber-500' : 
@@ -157,7 +136,7 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
               <div className="space-y-4">
                 <div className="flex items-center gap-2 px-1">
                    <MessageSquare size={14} className="text-brand-primary" />
-                   <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Reasoning</h4>
+                   <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Advisor Insight</h4>
                 </div>
                 <p className="text-[12px] font-bold text-slate-700 dark:text-slate-200 leading-relaxed italic bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
                   "{advice.reasoning}"
@@ -166,10 +145,10 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
                     <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1">Impact Level</p>
-                    <p className="text-[11px] font-black dark:text-white">{advice.impactPercentage}% of Buffer</p>
+                    <p className="text-[11px] font-black dark:text-white">{advice.impactPercentage}% Capacity</p>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1">Recommended Wait</p>
+                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1">Wait Period</p>
                     <p className="text-[11px] font-black dark:text-white">{advice.waitTime}</p>
                   </div>
                 </div>
@@ -177,7 +156,7 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
                 <div className="space-y-2">
                    <div className="flex items-center gap-2 px-1">
                       <ShieldCheck size={14} className="text-emerald-500" />
-                      <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Action Plan</h4>
+                      <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Action Items</h4>
                    </div>
                    <div className="space-y-2">
                       {advice.actionPlan.map((action: string, i: number) => (
@@ -193,13 +172,13 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
               <div className="flex gap-2 pt-2">
                 <button 
                   onClick={() => setAdvice(null)}
-                  className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black rounded-2xl text-[10px] uppercase tracking-widest active:scale-95 transition-all"
+                  className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black rounded-[24px] text-[10px] uppercase tracking-widest active:scale-95 transition-all"
                 >
                   Recalibrate
                 </button>
                 <button 
                   onClick={onCancel}
-                  className="flex-[2] py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-2xl text-[10px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="flex-[2] py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-[24px] text-[10px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   <Check size={14} strokeWidth={4} /> Acknowledge
                 </button>
@@ -210,7 +189,7 @@ const AskMe: React.FC<AskMeProps> = ({ settings, wealthItems, expenses, onCancel
 
         {/* Branding Footer */}
         <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 text-center shrink-0">
-           <p className="text-[8px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.3em]">Authorized by JK Decision Cloud</p>
+           <p className="text-[8px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.3em]">Authorized by JK Advisory Cloud</p>
         </div>
       </div>
     </div>
