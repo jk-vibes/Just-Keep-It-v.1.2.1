@@ -175,6 +175,40 @@
     .dark .mesh-blob {
       opacity: 0.05;
     }
+
+    /* Branded Briefcase & Coin Animations */
+    @keyframes coinDropInto {
+      0% { transform: translateY(-120%) scale(0.5); opacity: 0; }
+      10% { opacity: 1; }
+      60% { transform: translateY(-15%) scale(1); opacity: 1; }
+      80% { transform: translateY(10%) scale(0.6); opacity: 0; }
+      100% { transform: translateY(10%) scale(0.6); opacity: 0; }
+    }
+    
+    .coin-into {
+      animation: coinDropInto 2.5s infinite ease-in;
+      color: #facc15;
+      filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.4));
+    }
+
+    .briefcase-float {
+      animation: briefcaseFloat 4s infinite ease-in-out;
+    }
+
+    @keyframes briefcaseFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3%); }
+    }
+
+    @keyframes goldFilling {
+      0% { height: 0; transform: translateY(100%); }
+      100% { height: 60%; transform: translateY(40%); }
+    }
+
+    .animate-gold-fill {
+      animation: goldFilling 10s infinite alternate ease-in-out;
+    }
+
   </style>
 <script type="importmap">
 {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserProfile } from '../types';
 import { LogIn, UserCircle, Sparkles, Fingerprint, Loader2, AlertCircle, Coins } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
+import BrandedLogo from './BrandedLogo';
 
 interface AuthScreenProps {
   onLogin: (user: UserProfile) => void;
@@ -111,124 +112,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
         {/* GROUPED LOGO AND TITLE */}
         <div className="flex flex-col items-center w-full -space-y-4">
           {/* ANIMATED BRIEFCASE & COINS */}
-          <div className="relative group h-40 flex items-center justify-center w-full">
-            <style>{`
-              @keyframes coinDropInto {
-                0% { transform: translateY(-120px) scale(0.5); opacity: 0; }
-                10% { opacity: 1; }
-                60% { transform: translateY(-15px) scale(1); opacity: 1; }
-                80% { transform: translateY(5px) scale(0.6); opacity: 0; }
-                100% { transform: translateY(5px) scale(0.6); opacity: 0; }
-              }
-              .coin-into {
-                position: absolute;
-                animation: coinDropInto 2.5s infinite ease-in;
-                color: #facc15;
-                filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.6));
-                z-index: 1;
-              }
-              .briefcase-float {
-                animation: briefcaseFloat 4s infinite ease-in-out;
-                z-index: 2;
-              }
-              @keyframes briefcaseFloat {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-6px); }
-              }
-              @keyframes fillingUp {
-                0% { height: 0; transform: translateY(14px); }
-                100% { height: 14.5px; transform: translateY(0); }
-              }
-              .animate-gold-fill {
-                animation: fillingUp 10s infinite alternate ease-in-out;
-              }
-              .animate-gold-surface {
-                animation: fillingUp 10s infinite alternate ease-in-out;
-              }
-            `}</style>
-            
-            {/* Falling Coins */}
-            <div className="absolute top-0 w-full h-full pointer-events-none flex justify-center">
-              <Coins className="coin-into" size={32} style={{ left: '38%', animationDelay: '0s' }} />
-              <Coins className="coin-into" size={26} style={{ left: '56%', animationDelay: '0.9s' }} />
-              <Coins className="coin-into" size={30} style={{ left: '46%', animationDelay: '1.6s' }} />
-            </div>
-
+          <div className="relative group h-44 flex items-center justify-center w-full">
             <div className="absolute inset-0 bg-yellow-400/10 blur-[80px] rounded-full scale-75 opacity-40"></div>
-            
-            <div className="relative briefcase-float">
-              <svg width="140" height="140" viewBox="0 0 24 24" fill="none" className="drop-shadow-[0_0_40px_rgba(250,204,21,0.5)]">
-                <defs>
-                  <clipPath id="briefcase-body-clip">
-                    <path d="M4 8C4 7.44772 4.44772 7 5 7H19C19.5523 7 20 7.44772 20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V8Z" />
-                  </clipPath>
-                  <linearGradient id="gold-grad-realistic" x1="0.5" y1="0" x2="0.5" y2="1">
-                    <stop offset="0%" stopColor="#FDE047" />
-                    <stop offset="40%" stopColor="#EAB308" />
-                    <stop offset="100%" stopColor="#854D0E" />
-                  </linearGradient>
-                  <filter id="inner-shadow">
-                    <feOffset dx="0" dy="1" />
-                    <feGaussianBlur stdDeviation="1" result="offset-blur" />
-                    <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse" />
-                    <feFlood floodColor="black" floodOpacity="0.8" result="color" />
-                    <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-                    <feComposite operator="over" in="shadow" in2="SourceGraphic" />
-                  </filter>
-                </defs>
-
-                {/* Briefcase Handle */}
-                <path 
-                  d="M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7" 
-                  stroke="#FACC15" 
-                  strokeWidth="2.2" 
-                  strokeLinecap="round" 
-                />
-                
-                {/* Briefcase Back Shell (Dark interior) */}
-                <path 
-                  d="M4 8C4 7.44772 4.44772 7 5 7H19C19.5523 7 20 7.44772 20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V8Z" 
-                  fill="#020617" 
-                  filter="url(#inner-shadow)"
-                />
-
-                {/* LIQUID FILL - Blended with inner shadow */}
-                <g clipPath="url(#briefcase-body-clip)">
-                  <rect 
-                    x="4" y="8" width="16" height="14" 
-                    fill="url(#gold-grad-realistic)" 
-                    className="animate-gold-fill"
-                  />
-                  {/* Liquid Surface Highlight (Meniscus) */}
-                  <rect 
-                    x="4" y="7.8" width="16" height="0.6" 
-                    fill="#FFF" 
-                    fillOpacity="0.4"
-                    style={{ filter: 'blur(0.3px)' }}
-                    className="animate-gold-surface"
-                  />
-                </g>
-
-                {/* Briefcase Front Outline (Glassy Effect) */}
-                <path 
-                  d="M4 8C4 7.44772 4.44772 7 5 7H19C19.5523 7 20 7.44772 20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V8Z" 
-                  stroke="#FACC15" 
-                  strokeWidth="0.8"
-                  fill="rgba(250, 204, 21, 0.05)"
-                />
-
-                <text 
-                  x="12" y="17" 
-                  fontSize="4" fontWeight="900" 
-                  textAnchor="middle" 
-                  fill="white" 
-                  style={{ fontFamily: 'Plus Jakarta Sans', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }}
-                >
-                  JK
-                </text>
-              </svg>
-            </div>
-            
+            <BrandedLogo size="lg" />
             {/* AI ICON BADGE */}
             <div className="absolute top-4 right-14 bg-yellow-500 p-1.5 rounded-xl shadow-xl animate-bounce-slow z-30 border border-yellow-400/50">
               <Sparkles size={14} className="text-white" />
@@ -236,7 +122,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           </div>
           
           {/* Title & Vision */}
-          <div className="text-center w-full space-y-4 px-4">
+          <div className="text-center w-full space-y-4 px-4 pt-4">
             <div className="space-y-1">
               <h1 className="text-5xl font-black text-white tracking-tighter lowercase leading-none">just keep it</h1>
               <p className="text-[10px] font-black text-yellow-500 uppercase tracking-[0.4em] opacity-80">The Wealth Protocol</p>

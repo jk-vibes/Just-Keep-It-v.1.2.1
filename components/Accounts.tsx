@@ -60,11 +60,11 @@ const UltraCompactRow: React.FC<{
         <div className={`${item.type === 'Liability' ? 'text-rose-500' : 'text-emerald-500'} opacity-60`}>
           {getCategoryIcon(item.category)}
         </div>
-        <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate uppercase tracking-tighter">
+        <span className="text-[9px] font-bold text-slate-600 dark:text-slate-400 truncate uppercase tracking-tighter">
           {item.alias || item.name}
         </span>
       </div>
-      <span className={`text-[10px] font-black tracking-tighter shrink-0 ${item.type === 'Liability' ? 'text-rose-500' : 'text-slate-800 dark:text-slate-200'}`}>
+      <span className={`text-[9px] font-black tracking-tighter shrink-0 ${item.type === 'Liability' ? 'text-rose-500' : 'text-slate-800 dark:text-slate-200'}`}>
         {item.value < 0 ? '-' : ''}{currencySymbol}{Math.abs(Math.round(item.value)).toLocaleString()}
       </span>
     </div>
@@ -222,10 +222,10 @@ const Accounts: React.FC<AccountsProps> = ({
       {/* Main Grid Area */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* CAPITAL ASSETS COLUMN */}
+        {/* DEBT NODES COLUMN (Previously Assets) */}
         <div className="flex-1 flex flex-col border-r border-slate-100 dark:border-slate-800">
           <div className="px-2 py-1.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">Assets</span>
+            <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">Debt</span>
             <BarChart3 size={9} className="text-slate-300" />
           </div>
           
@@ -247,14 +247,14 @@ const Accounts: React.FC<AccountsProps> = ({
 
           <div className="p-2.5 bg-emerald-50/50 dark:bg-emerald-950/20 border-t border-emerald-100 dark:border-emerald-900/30">
             <p className="text-[7px] font-black text-slate-400 uppercase">Sub total</p>
-            <p className="text-[15px] font-black text-emerald-600 leading-tight">{currencySymbol}{stats.totalAssets.toLocaleString()}</p>
+            <p className="text-[16px] font-black text-emerald-600 leading-tight">{currencySymbol}{stats.totalAssets.toLocaleString()}</p>
           </div>
         </div>
 
-        {/* DEBT NODES COLUMN */}
+        {/* CREDIT NODES COLUMN (Previously Debt) */}
         <div className="flex-1 flex flex-col">
           <div className="px-2 py-1.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <span className="text-[8px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-[0.2em]">Debt</span>
+            <span className="text-[8px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-[0.2em]">Credit</span>
             <Activity size={9} className="text-slate-300" />
           </div>
 
@@ -276,7 +276,7 @@ const Accounts: React.FC<AccountsProps> = ({
 
           <div className="p-2.5 bg-rose-50/50 dark:bg-rose-950/20 border-t border-rose-100 dark:border-rose-900/30">
             <p className="text-[7px] font-black text-slate-400 uppercase">Sub total</p>
-            <p className="text-[15px] font-black text-rose-600 leading-tight">{currencySymbol}{stats.totalLiabilities.toLocaleString()}</p>
+            <p className="text-[16px] font-black text-rose-600 leading-tight">{currencySymbol}{stats.totalLiabilities.toLocaleString()}</p>
           </div>
         </div>
 

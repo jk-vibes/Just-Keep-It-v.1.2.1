@@ -100,8 +100,8 @@ const AddAccount: React.FC<AddAccountProps> = ({ settings, onSave, onUpdate, onD
                     }} 
                     className={selectClasses}
                   >
-                    <option value="Investment">Asset</option>
-                    <option value="Liability">Debt</option>
+                    <option value="Investment">Debt</option>
+                    <option value="Liability">Credit</option>
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>

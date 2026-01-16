@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, Expense, BudgetRule, UserSettings, Category, UserProfile, Frequency, RecurringItem, Income, IncomeType, AppTheme, Notification, WealthItem, WealthType, WealthCategory, DensityLevel, BudgetItem, Bill } from './types';
 import Dashboard from './components/Dashboard';
@@ -19,6 +18,7 @@ import Footer from './components/Footer';
 import RulesEngine from './components/RulesEngine';
 import ImportReviewModal from './components/ImportReviewModal';
 import AskMe from './components/AskMe';
+import BrandedLogo from './components/BrandedLogo';
 import { Loader2, LayoutDashboard, List, Settings as SettingsIcon, Bell, Wallet, Target, Cpu, X, Sparkles, FolderOpen, CheckCircle2, AlertCircle, ArrowLeftRight } from 'lucide-react';
 import { DEFAULT_SPLIT, getCurrencySymbol } from './constants';
 import { syncToGoogleDrive, restoreFromGoogleDrive, BackupData } from './services/cloudSync';
@@ -625,7 +625,7 @@ const App: React.FC = () => {
         <div className="max-w-2xl mx-auto flex justify-between items-center w-full">
           <div className="flex flex-col items-start">
             <div className="flex items-center gap-2">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-brand-primary"><path d="M4 8C4 7.44772 4.44772 7 5 7H19C19.5523 7 20 7.44772 20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V8Z" fill="currentColor" /><path d="M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><text x="12" y="17" fontSize="6" fontWeight="900" textAnchor="middle" fill="white">JK</text></svg>
+              <BrandedLogo size="sm" className="mt-1" />
               <button onClick={() => { triggerHaptic(); setIsShowingVersionLog(true); }} className="bg-brand-bg/50 px-1.5 py-0.5 rounded-full border border-brand-border active:scale-95 transition-transform mt-1"><span className="text-[8px] font-black text-brand-text/50">v1.2.1</span></button>
             </div>
             <h1 className="text-[9px] font-bold text-brand-text lowercase tracking-tight mt-0.5 ml-1">just keep it</h1>
