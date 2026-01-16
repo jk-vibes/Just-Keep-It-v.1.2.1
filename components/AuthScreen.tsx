@@ -7,7 +7,7 @@ interface AuthScreenProps {
   onLogin: (user: UserProfile) => void;
 }
 
-const GOOGLE_CLIENT_ID = '620152015803-umm0ekg7ori8geljjpdm3j8l4mgoubf6.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '482285261060-4rv2jmv94794rg129lejgk1iij13d6oh.apps.googleusercontent.com';
 
 const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);

@@ -220,8 +220,14 @@ export async function getBudgetInsights(expenses: Expense[], settings: UserSetti
     Context: Monthly Income ${Math.round(settings.monthlyIncome)} ${settings.currency}.
     Current spend: Needs ${summary.Needs || 0}, Wants ${summary.Wants || 0}, Savings ${summary.Savings || 0}.
     Targets: ${settings.split.Needs}% Needs, ${settings.split.Wants}% Wants, ${settings.split.Savings}% Savings.
-    Output 3 EXTREMELY SHORT (max 10 words) actionable coaching tips in JSON array of {tip, impact}.
-    Examples: "Hey, your saving percentage is good this month!", "Avoid buying expensive tech this week.", "Dining spend is peaking, try cooking."
+    Output 3 EXTREMELY SHORT actionable coaching tips in JSON array of {tip, impact}.
+    
+    RULES:
+    1. Max 6 words per tip.
+    2. Use Sentence case (only first letter capitalized). Do NOT use all caps.
+    3. Be specific if possible.
+    
+    Examples: "Your savings rate looks good.", "Avoid buying expensive tech now.", "High dining spend detected."
   `;
 
   try {
@@ -313,7 +319,6 @@ export async function getDecisionAdvice(
   }, {} as Record<Category, number>);
 
   const assets = wealthItems.filter(i => i.type === 'Investment').reduce((sum, i) => sum + i.value, 0);
-  // Fixed category filter strings to match official WealthCategory type
   const liquid = wealthItems.filter(i => ['Savings', 'Cash'].includes(i.category)).reduce((sum, i) => sum + i.value, 0);
 
   const prompt = `

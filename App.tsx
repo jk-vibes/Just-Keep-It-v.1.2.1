@@ -42,12 +42,12 @@ const INITIAL_SETTINGS: UserSettings = {
 
 const Toast: React.FC<{ message: string; type?: 'success' | 'error' | 'info'; onClose: () => void }> = ({ message, type = 'success', onClose }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 5000);
+    const timer = setTimeout(onClose, 8000); // Extended to 8s for readability
     return () => clearTimeout(timer);
   }, [onClose]);
 
   return (
-    <div className="fixed bottom-24 left-4 z-[300] animate-slide-up px-5 py-4 rounded-[24px] shadow-2xl backdrop-blur-2xl border border-white/10 flex items-center gap-3 max-w-[85vw] bg-slate-900/95 text-white">
+    <div className="fixed bottom-32 left-6 z-[300] animate-slide-up px-5 py-4 rounded-[24px] shadow-2xl backdrop-blur-2xl border border-white/10 flex items-center gap-3 max-w-[85vw] bg-slate-900/95 text-white">
       <div className="shrink-0">
         {type === 'success' ? <CheckCircle2 className="text-emerald-400" size={18} /> : type === 'error' ? <AlertCircle className="text-rose-400" size={18} /> : <Sparkles className="text-indigo-400 animate-pulse" size={18} />}
       </div>
